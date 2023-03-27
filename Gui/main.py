@@ -1,9 +1,18 @@
 from tkinter import *
 from tkinter import ttk
 from PIL import ImageTk, Image
+from tkinter import filedialog
 
 
 class MainWindow():
+
+    def select_music_file(self):
+        file_path = filedialog.askopenfilename()
+        print(file_path)
+
+    def select_lyrics_file(self):
+        file_path = filedialog.askopenfilename()
+        print(file_path)
 
     def __init__(self, mainWidget):
         self.main_frame = ttk.Frame(mainWidget, width=1200, height=800, padding=(0, 0, 0, 0))
@@ -44,11 +53,23 @@ class MainWindow():
         self.gui_elements_remove(self.gui_elements)
         self.out_of_main = True
 
-        self.back_to_main_button = ttk.Button(self.main_frame, text='Cofnijl')
+        self.back_to_main_button = ttk.Button(self.main_frame, text='Cofnij')
         self.back_to_main_button.grid(row=0, column=0)
         self.back_to_main_button.bind('<Button-1>', self.back_to_main)
 
-        self.gui_elements = [self.back_to_main_button]
+        # self.music_label = ttk.Label(self.main_frame, text="Choose a music file:")
+        # self.music_label.grid(row=3, column=0)
+
+        self.music_button = ttk.Button(self.main_frame, text='Wybierz plik muzyczny', command=self.select_music_file)
+        self.music_button.grid(row=3, column=0)
+
+        # self.text_label = ttk.Label(self.main_frame, text="Choose a text file:")
+        # self.text_label.grid(row=4, column=0)
+
+        self.lyrics_button = ttk.Button(self.main_frame, text='Wybierz plik tekstowy', command=self.select_lyrics_file)
+        self.lyrics_button.grid(row=4, column=0)
+
+        self.gui_elements = [self.back_to_main_button, self.music_button, self.lyrics_button]
 
     def archive_gui(self, event):
 
