@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
 from tkinter import filedialog
+import os
 
 
 class output_file():
@@ -20,7 +21,7 @@ class MainWindow():
         print(file_path)
 
     def __init__(self, mainWidget):
-        self.main_frame = ttk.Frame(mainWidget, width=1200, height=800, padding=(0, 0, 0, 0))
+        self.main_frame = tk.Frame(mainWidget, width=1200, height=800, bg='#E61E4F' )
         self.main_frame.grid(row=0, column=0)
         self.out_of_main = False;
         image1 = Image.open("karaoke-logo.png")
@@ -81,19 +82,38 @@ class MainWindow():
         self.gui_elements_remove(self.gui_elements)
         self.out_of_main = True
 
-        s = tk.Style()
-        s.configure('My.TFrame', background='red')
 
-        self.archive_frame = ttk.Frame(self.main_frame, width=800, height=500, style='My.TFrame')
-        self.archive_frame.grid(1,1)
-        self.archive_frame.config()
+
+        self.archive_frame = tk.Frame(self.main_frame, width=800, height=500, bg="red")
+        try:
+            filenames = os.listdir("archive")
+        except:
+            label = tk.Label(self.archive_frame, text="Brak zapisanych plików")
+            label.pack()
+
+        dir_empty = True
+
+        for file in filenames:
+            if file.endswith('.mp4'):
+                dir_empty = False
+                button = tk.Button(self.archive_frame, text=file.title(), command=lambda : self.clip_select(file))
+                button.pack()
+        if dir_empty:
+            label = tk.Label(self.archive_frame, text="Brak zapisanych plików")
+            label.pack()
+
+
+
+        self.archive_frame.grid(row=1,column=1)
+
 
 
         self.back_to_main_button = ttk.Button(self.main_frame, text='Cofnij')
         self.back_to_main_button.grid(row=0, column=0)
         self.back_to_main_button.bind('<Button-1>', self.back_to_main)
 
-        self.gui_elements = [self.back_to_main_button]
+        self.gui_elements = [self.back_to_main_button,
+                             self.archive_frame]
 
     def setings_gui(self, event):
         self.gui_elements_remove(self.gui_elements)
@@ -122,6 +142,17 @@ class MainWindow():
     def gui_elements_remove(self, elements):
         for element in elements:
             element.destroy()
+
+
+    def play_from_archive(self, path):
+        pass
+
+    def clip_select(self, file):
+
+        self.select_clip_path = ("archive\\" + file.title())
+        print(self.select_clip_path)
+
+
 
 def main():
     global root
