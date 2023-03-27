@@ -1,4 +1,4 @@
-from tkinter import *
+import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
 from tkinter import filedialog
@@ -7,7 +7,7 @@ from tkinter import filedialog
 class output_file():
 
     def __init__(self, video):
-        self.video = video;
+        self.video = video
 
 class MainWindow():
 
@@ -81,6 +81,14 @@ class MainWindow():
         self.gui_elements_remove(self.gui_elements)
         self.out_of_main = True
 
+        s = tk.Style()
+        s.configure('My.TFrame', background='red')
+
+        self.archive_frame = ttk.Frame(self.main_frame, width=800, height=500, style='My.TFrame')
+        self.archive_frame.grid(1,1)
+        self.archive_frame.config()
+
+
         self.back_to_main_button = ttk.Button(self.main_frame, text='Cofnij')
         self.back_to_main_button.grid(row=0, column=0)
         self.back_to_main_button.bind('<Button-1>', self.back_to_main)
@@ -118,10 +126,10 @@ class MainWindow():
 def main():
     global root
 
-    root = Tk()
+    root = tk.Tk()
     root.geometry('1000x600+100+100')
     root.title("My Little Karaoke")
-    icon = PhotoImage(file='karaoke-logo.png')
+    icon = tk.PhotoImage(file='karaoke-logo.png')
     root.iconphoto(False, icon)
     window = MainWindow(root)
 
