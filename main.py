@@ -12,11 +12,11 @@ class output_file():
 class MainWindow():
 
     def select_music_file(self):
-        file_path = filedialog.askopenfilename()
+        file_path = filedialog.askopenfilename(filetypes=[("WAV Files", "*.wav")])
         print(file_path)
 
     def select_lyrics_file(self):
-        file_path = filedialog.askopenfilename()
+        file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
         print(file_path)
 
     def __init__(self, mainWidget):
