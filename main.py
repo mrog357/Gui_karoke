@@ -2,12 +2,14 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
 from tkinter import filedialog
+from moviepy.editor import *
 import os
-import nussl
-import scaper
-import torch
-import git+https://github.com/source-separation/tutorial
-import common
+import imageio
+# import nussl
+# import scaper
+# import torch
+# import git+https://github.com/source-separation/tutorial
+# import common
 
 class output_file():
 
@@ -16,14 +18,6 @@ class output_file():
 
 class MainWindow():
 
-    def select_music_file(self):
-        file_path = filedialog.askopenfilename(filetypes=[("WAV Files", "*.wav")])
-        print(file_path)
-
-    def select_lyrics_file(self):
-        file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
-        print(file_path)
-
     def __init__(self, mainWidget):
         self.main_frame = tk.Frame(mainWidget, width=1200, height=800, bg='#E61E4F' )
         self.main_frame.grid(row=0, column=0)
@@ -31,8 +25,21 @@ class MainWindow():
         image1 = Image.open("karaoke-logo.png")
         image2 = image1.resize((200, 200))
         self.test = ImageTk.PhotoImage(image2)
+        self.music_path = None
+        self.lyrics_path = None
+
 
         self.main_gui()
+
+    def select_music_file(self):
+        file_path = filedialog.askopenfilename(filetypes=[("WAV Files", "*.wav")])
+        print(file_path)
+        self.music_path = file_path
+
+    def select_lyrics_file(self):
+        file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
+        print(file_path)
+        self.lyrics_path = file_path
 
     def main_gui(self):
         root.title('My Little Karaoke')
@@ -53,10 +60,48 @@ class MainWindow():
         self.create_button.bind('<Button-1>', self.create_gui)
 
         self.archive_button = ttk.Button(self.main_frame, text='Otwórz archiwum')
-        self.archive_button.grid(row=2, column=3)
+        self.archive_button.grid(row=3, column=1)
         self.archive_button.bind('<Button-1>', self.archive_gui)
 
         self.gui_elements = [self.create_button, self.logo, self.archive_button]
+
+
+    #todo
+    def generate_video(self):
+        if self.music_path != None and self.lyrics_path != None:
+            music_clip = AudioFileClip(self.music_path)
+            lyrics_text = open(self.lyrics_path, 'r').read()
+            print(lyrics_text)
+
+            # Stwórz obiekt klasy TextClip z tekstem piosenki
+            screensize = (720, 460)
+            lyrics_clip = TextClip('Cool effect', color='white', font="Amiri-Bold",
+                               kerning=5, fontsize=100)
+            cvc = CompositeVideoClip([lyrics_clip.set_pos('center')],
+                                     size=screensize)
+
+            # Dostosuj długość klipów do długości utworu muzycznego
+            lyrics_clip = lyrics_clip.set_duration(music_clip.duration)
+
+            # Połącz klipy
+            final_clip = concatenate_videoclips([lyrics_clip.set_audio(music_clip)])
+
+            # Zapisz jako plik MP4
+            output_path = filedialog.asksaveasfilename(defaultextension='.mp4')
+            final_clip.write_videofile(output_path, codec='libx264', audio_codec='aac')
+
+            print("Plik MP4 został wygenerowany.")
+        else:
+            print("Najpierw wybierz plik muzyczny i tekstowy!")
+
+    def play_video(self):
+        if self.music_path != None and self.lyrics_path != None:
+            file_path = filedialog.askopenfilename(filetypes=[("Video File", "*.mp4")])
+            if file_path:
+                video = VideoFileClip(file_path)
+                video.preview()
+        else:
+            print('Najpierw musisz wczytać ścieżkę dźwiękową oraz tekst')
 
     def create_gui(self, event):
 
@@ -79,7 +124,10 @@ class MainWindow():
         self.lyrics_button = ttk.Button(self.main_frame, text='Wybierz plik tekstowy', command=self.select_lyrics_file)
         self.lyrics_button.grid(row=4, column=0)
 
-        self.gui_elements = [self.back_to_main_button, self.music_button, self.lyrics_button]
+        self.confirm_button = ttk.Button(self.main_frame, text='Zatwierdź', command=self.play_video)
+        self.confirm_button.grid(row=5, column=0)
+
+        self.gui_elements = [self.back_to_main_button, self.music_button, self.lyrics_button, self.confirm_button]
 
     def archive_gui(self, event):
 
