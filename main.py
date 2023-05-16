@@ -28,7 +28,6 @@ class MainWindow():
         self.music_path = None
         self.lyrics_path = None
 
-
         self.main_gui()
 
     def select_music_file(self):
@@ -66,29 +65,35 @@ class MainWindow():
         self.gui_elements = [self.create_button, self.logo, self.archive_button]
 
 
-    #todo
     def generate_video(self):
-        if self.music_path != None and self.lyrics_path != None:
-            music_clip = AudioFileClip(self.music_path)
-            lyrics_text = open(self.lyrics_path, 'r').read()
-            print(lyrics_text)
+        if self.music_path is not None and self.lyrics_path is not None:
 
-            # Stwórz obiekt klasy TextClip z tekstem piosenki
-            screensize = (720, 460)
-            lyrics_clip = TextClip('Cool effect', color='white', font="Amiri-Bold",
-                               kerning=5, fontsize=100)
-            cvc = CompositeVideoClip([lyrics_clip.set_pos('center')],
-                                     size=screensize)
+            output = 'Gui/output/output.mp4'
 
-            # Dostosuj długość klipów do długości utworu muzycznego
-            lyrics_clip = lyrics_clip.set_duration(music_clip.duration)
+            # Tworzenie sekwencji wideo
+            video = ColorClip((640, 480), duration=5, col=(0, 0, 255))
 
-            # Połącz klipy
-            final_clip = concatenate_videoclips([lyrics_clip.set_audio(music_clip)])
+            # Tworzenie sekwencji audio
+            audio = AudioFileClip(self.music_path)
+
+            # # Ładowanie tekstu z pliku
+            # with open(self.lyrics_path, 'r') as file:
+            #     lyrics_text = file.read()
+            #
+            # # Tworzenie obiektu TextClip z tekstem piosenki
+            # lyrics_clip = TextClip(lyrics_text, fontsize=4, color=(255, 255, 255))
+            #
+            # # Dostosowanie długości klipu tekstowego do długości utworu muzycznego
+            # lyrics_clip = lyrics_clip.set_duration(audio.duration)
+            #
+            # # Połączenie wideo, audio i napisów
+            # final_clip = video.set_audio(audio).set_duration(audio.duration).set_pos(('center', 'bottom')).set_mask(lyrics_clip)
+
+            # Połączenie wideo i audio
+            final_clip = video.set_audio(audio)
 
             # Zapisz jako plik MP4
-            output_path = filedialog.asksaveasfilename(defaultextension='.mp4')
-            final_clip.write_videofile(output_path, codec='libx264', audio_codec='aac')
+            final_clip.write_videofile(output, codec='libx264', audio_codec='aac', fps=30)
 
             print("Plik MP4 został wygenerowany.")
         else:
@@ -124,7 +129,7 @@ class MainWindow():
         self.lyrics_button = ttk.Button(self.main_frame, text='Wybierz plik tekstowy', command=self.select_lyrics_file)
         self.lyrics_button.grid(row=4, column=0)
 
-        self.confirm_button = ttk.Button(self.main_frame, text='Zatwierdź', command=self.play_video)
+        self.confirm_button = ttk.Button(self.main_frame, text='Zatwierdź', command=self.generate_video)
         self.confirm_button.grid(row=5, column=0)
 
         self.gui_elements = [self.back_to_main_button, self.music_button, self.lyrics_button, self.confirm_button]
